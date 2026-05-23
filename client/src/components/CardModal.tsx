@@ -123,7 +123,6 @@ export default function CardModal({ cardId, boardLabels, onClose, onUpdated }: P
               className="flex-1 text-lg font-semibold text-gray-900 border-b border-transparent hover:border-gray-300 focus:border-blue-500 outline-none pb-1 pr-4"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              onBlur={save}
             />
             <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl leading-none ml-2">
               ×
@@ -140,7 +139,6 @@ export default function CardModal({ cardId, boardLabels, onClose, onUpdated }: P
               }`}
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              onBlur={save}
             />
             {isOverdue && <span className="ml-2 text-xs text-red-500">Overdue</span>}
           </div>
@@ -201,7 +199,6 @@ export default function CardModal({ cardId, boardLabels, onClose, onUpdated }: P
               placeholder="Add a description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              onBlur={save}
             />
           </div>
 

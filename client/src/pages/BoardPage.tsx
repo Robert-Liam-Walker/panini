@@ -252,7 +252,6 @@ export default function BoardPage({ user }: { user: User }) {
   const [, setActiveColId] = useState<number | null>(null);
   const [addingCol, setAddingCol] = useState(false);
   const [newColTitle, setNewColTitle] = useState("");
-  const [searchQ, setSearchQ] = useState("");
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -417,24 +416,7 @@ export default function BoardPage({ user }: { user: User }) {
           ← Boards
         </button>
         <span className="font-bold text-gray-900">{board.title}</span>
-        {/* Search */}
-        <div className="ml-auto relative">
-          <input
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 w-48"
-            placeholder="Search cards..."
-            value={searchQ}
-            onChange={(e) => setSearchQ(e.target.value)}
-          />
-          {searchQ && (
-            <button
-              onClick={() => setSearchQ("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
-            >
-              ×
-            </button>
-          )}
-        </div>
-        <span className="text-sm text-gray-400">{user.username}</span>
+        <span className="ml-auto text-sm text-gray-400">{user.username}</span>
       </nav>
 
       {/* Board */}
@@ -452,26 +434,11 @@ export default function BoardPage({ user }: { user: User }) {
             strategy={horizontalListSortingStrategy}
           >
             <div className="flex gap-4 items-start">
-              {board.columns
-                .filter((col) => {
-                  if (!searchQ) return true;
-                  return col.cards.some((c) =>
-                    c.title.toLowerCase().includes(searchQ.toLowerCase())
-                  );
-                })
-                .map((col) => {
-                  const filteredCol = searchQ
-                    ? {
-                        ...col,
-                        cards: col.cards.filter((c) =>
-                          c.title.toLowerCase().includes(searchQ.toLowerCase())
-                        ),
-                      }
-                    : col;
+              {board.columns.map((col) => {
                   return (
                     <SortableColumn
                       key={col.id}
-                      column={filteredCol}
+                      column={col}
                       onCardClick={setOpenCardId}
                       onAddCard={addCard}
                       onRenameColumn={renameColumn}

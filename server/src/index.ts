@@ -11,7 +11,6 @@ import { columnRoutes } from "./routes/columns.js";
 import { cardRoutes } from "./routes/cards.js";
 import { labelRoutes } from "./routes/labels.js";
 import { commentRoutes } from "./routes/comments.js";
-import { searchRoutes } from "./routes/search.js";
 
 declare module "@fastify/session" {
   interface FastifySessionObject {
@@ -54,7 +53,6 @@ await app.register(columnRoutes);
 await app.register(cardRoutes);
 await app.register(labelRoutes);
 await app.register(commentRoutes);
-await app.register(searchRoutes);
 
 const port = parseInt(process.env.PORT ?? "3000");
 try {

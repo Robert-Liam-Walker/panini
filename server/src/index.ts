@@ -30,7 +30,7 @@ await app.register(cookie);
 await app.register(session, {
   secret: process.env.SESSION_SECRET ?? "panini-dev-secret-changeme-32chars!",
   cookie: {
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.COOKIE_SECURE === "true",
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   },

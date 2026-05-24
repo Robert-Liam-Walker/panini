@@ -35,6 +35,46 @@ type SeedBody = {
 };
 
 export async function adminRoutes(app: FastifyInstance) {
+  // Move a card to a column referenced by title on the same board.
+  // Idempotent: appends to the end of the target column. Pass `position`
+  // to override placement.
+  app.patch("/api/admin/cards/:id/move", { preHandler: requireAdmin }, async (req, reply) => {
+    const id = parseInt((req.params as { id: string }).id);
+    if (!Number.isFinite(id)) return reply.status(400).send({ error: "Invalid card id" });
+    const { columnTitle, position } = req.body as { columnTitle: string; position?: number };
+    if (!columnTitle) return reply.status(400).send({ error: "columnTitle required" });
+
+    const card = await prisma.card.findUnique({
+      where: { id },
+      include: { column: { include: { board: { include: { columns: true } } } } },
+    });
+    if (!card) return reply.status(404).send({ error: "Card not found" });
+
+    const targetCol = card.column.board.columns.find(
+      (c) => c.title.toLowerCase() === columnTitle.toLowerCase(),
+    );
+    if (!targetCol) {
+      return reply.status(400).send({
+        error: `Column '${columnTitle}' not found on board ${card.column.board.id}`,
+        availableColumns: card.column.board.columns.map((c) => c.title),
+      });
+    }
+
+    const last = await prisma.card.findFirst({
+      where: { columnId: targetCol.id },
+      orderBy: { position: "desc" },
+    });
+    const newPosition = position ?? (last?.position ?? -1) + 1;
+    const updated = await prisma.card.update({
+      where: { id },
+      data: { columnId: targetCol.id, position: newPosition },
+    });
+    await prisma.activity.create({
+      data: { cardId: id, action: "moved", detail: `admin → ${targetCol.title}` },
+    });
+    return reply.send(updated);
+  });
+
   app.get("/api/admin/users", { preHandler: requireAdmin }, async (_req, reply) => {
     const users = await prisma.user.findMany({
       select: { id: true, username: true, createdAt: true, _count: { select: { boards: true } } },

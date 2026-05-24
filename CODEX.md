@@ -189,6 +189,9 @@ Endpoints:
 
 - `GET /api/admin/users` — list users (id, username, createdAt, board count).
 - `GET /api/admin/users/:username/boards` — list boards for a named user.
+- `PATCH /api/admin/cards/:id/move` — move a card to a column referenced
+  by title on the same board. Body: `{ columnTitle, position? }`. Appends
+  to the end of the target column unless `position` is supplied.
 - `POST /api/admin/boards/seed` — create a board for a named user and
   (optionally) populate cards into columns referenced by title. Default
   columns ("To Do", "In Progress", "Done") are created automatically.
